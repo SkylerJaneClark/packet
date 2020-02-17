@@ -225,7 +225,11 @@ def fetch_results():
     """
     end_date = datetime.combine(input_date("Enter the last day of the packet season you'd like to retrieve results "
                                            'from'), packet_end_time)
+    get_result(end_date)
 
+
+
+def get_result(end_date):
     for packet in Packet.query.filter_by(end=end_date).all():
         print()
 
@@ -241,10 +245,25 @@ def fetch_results():
         print('\tUpperclassmen: {}/{}'.format(received.upper, required.upper))
         print('\tFreshmen: {}/{}'.format(received.fresh, required.fresh))
         print('\tMiscellaneous: {}/{}'.format(received.misc, required.misc))
+        print('\tEnd date: {}' .format(end_date))
         print()
 
         print('\tTotal missed:', required.total - received.total)
 
+
+
+@app.cli.command('fetch-results-range')
+def fetch_results_range():
+    start_date = datetime.combine(input_date("Enter the last day of the packet season you'd like to retrieve results "
+                                           'from'), packet_end_time)
+    end_date =  datetime.combine(input_date("Enter the last day of the packet season you'd like to retrieve results "
+                                           'from'), packet_end_time)
+    delta = timedelta(days=1)
+    while start_date <= end_date:
+        get_result(start_date)
+        print("\tChecking date: {}".format(start_date))
+        start_date += delta
+    
 
 @app.cli.command('extend-packet')
 @click.argument('packet_id')
